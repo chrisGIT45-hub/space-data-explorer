@@ -606,7 +606,8 @@ elif dataset_choice == "Transiting Planets":
         elif "2." in analysis_choice: run_transit_classification_model(data)
 
 elif dataset_choice == "Kepler False Positives":
-    add_custom_styling(main_bg_path=KEPLER_MAIN_BG, sidebar_bg_path=KEPLER_SIDEBAR_BG, title_font_path=TITLE_FONT_PATH)
+    # This is the temporary test line
+    add_custom_styling(main_bg_path=EXO_SIDEBAR_BG, sidebar_bg_path=EXO_MAIN_BG, title_font_path=TITLE_FONT_PATH)
     data = load_data(KEPLER_FP_FILEPATH)
     if data is not None:
         st.sidebar.header("Select an Analysis")
