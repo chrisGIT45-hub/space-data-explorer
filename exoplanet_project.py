@@ -37,7 +37,7 @@ METEOR_MAIN_BG = "asteroid-earth-space-hd-wallpaper-uhdpaper.com-510@0@f.jpg"
 METEOR_SIDEBAR_BG = "image_a67ddb.png"
 KEPLER_MAIN_BG = "kepler_main.jpg"
 KEPLER_SIDEBAR_BG = "kepler_sidebar.jpg"
-TRANSIT_MAIN_BG = "transitbackground.png"
+TRANSIT_MAIN_BG = "transitbackground1.png"
 # IMPORTANT: Make sure 'transitsidebar.png' exists in your GitHub repository!
 TRANSIT_SIDEBAR_BG = "transitsidebar.png"
 
