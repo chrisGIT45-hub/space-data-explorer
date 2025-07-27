@@ -1,6 +1,7 @@
 # exoplanet_project.py
 
 import streamlit as st
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
@@ -69,6 +70,12 @@ def get_font_as_base64(font_path):
 
 # --- Custom Styling and Background ---
 def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
+    st.info(f"Attempting to load MAIN background: '{main_bg_path}'")
+    st.info(f"Does the file exist on the server? -> {os.path.exists(main_bg_path)}")
+
+    st.info(f"Attempting to load SIDEBAR background: '{sidebar_bg_path}'")
+    st.info(f"Does the file exist on the server? -> {os.path.exists(sidebar_bg_path)}")
+    # --- END: TEMPORARY DEBUGGING CODE ---
     title_font_base64 = get_font_as_base64(title_font_path)
     main_bg_base64 = get_base64_of_bin_file(main_bg_path)
     sidebar_bg_base64 = get_base64_of_bin_file(sidebar_bg_path)
