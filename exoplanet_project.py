@@ -30,20 +30,22 @@ METEORITE_FILEPATH = "Meteorite_Landings.csv"
 TRANSIT_FILEPATH = "cleaned_Transitplanet_data.zip"  # Note: corrected to lowercase 't'
 KEPLER_FP_FILEPATH = "keplerfalsepostives.csv"
 
+from pathlib import Path
+
+BASE_PATH = Path(__file__).resolve().parent
+
 # Asset files
-EXO_MAIN_BG = "solar-system-252023.png"
-EXO_SIDEBAR_BG = "planets-solar-system-cosmic-in-s.jpg"
-METEOR_MAIN_BG = "asteroid-earth-space-hd-wallpaper-uhdpaper.com-510@0@f.jpg"
-METEOR_SIDEBAR_BG = "image_a67ddb.png"
-KEPLER_MAIN_BG = "kepler_main.jpg"
-KEPLER_SIDEBAR_BG = "kepler_sidebar.jpg"
-TRANSIT_MAIN_BG = "transitbackground1.png"
-# IMPORTANT: Make sure 'transitsidebar.png' exists in your GitHub repository!
-TRANSIT_SIDEBAR_BG = "transitsidebar.png"
+EXO_MAIN_BG = BASE_PATH / "solar-system-252023.png"
+EXO_SIDEBAR_BG = BASE_PATH / "planets-solar-system-cosmic-in-s.jpg"
+METEOR_MAIN_BG = BASE_PATH / "asteroid-earth-space-hd-wallpaper-uhdpaper.com-510@0@f.jpg"
+METEOR_SIDEBAR_BG = BASE_PATH / "image_a67ddb.png"
+KEPLER_MAIN_BG = BASE_PATH / "kepler_main.jpg"
+KEPLER_SIDEBAR_BG = BASE_PATH / "kepler_sidebar.jpg"
+TRANSIT_MAIN_BG = BASE_PATH / "transitbackground1.png"
+TRANSIT_SIDEBAR_BG = BASE_PATH / "transitsidebar.png"
 
-# Font file paths (Note the 'fonts/' subfolder)
-TITLE_FONT_PATH = "fonts/SpecialGothicExpandedOne-Regular.ttf"
-
+# Font
+TITLE_FONT_PATH = BASE_PATH / "fonts" / "SpecialGothicExpandedOne-Regular.ttf"
 
 # --- Helper function to load a local image as Base64 ---
 @st.cache_data
