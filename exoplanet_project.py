@@ -20,29 +20,29 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- SIMPLE FILE PATHS ---
-# Using raw strings (r'...') to handle your specific Windows file paths.
-BASE_PATH = r'C:\Users\Chris\Downloads\NEWDAY'
+# --- CORRECTED: RELATIVE FILE PATHS ---
+# All paths are now relative to the script's location in your GitHub repository.
+# The BASE_PATH variable has been removed as it is no longer needed.
 
 # Data files
-# --- UPDATED: Path now points to the new .zip file for the Exoplanet Archive ---
-EXOPLANET_FILEPATH = BASE_PATH + r'\PS_2025.07.25_23.13.46.zip'
-METEORITE_FILEPATH = BASE_PATH + r'\Meteorite_Landings.csv'
-TRANSIT_FILEPATH = BASE_PATH + r'\cleaned_Transitplanet_data.zip'
-KEPLER_FP_FILEPATH = BASE_PATH + r'\keplerfalsepostives.csv'
+EXOPLANET_FILEPATH = "PS_2025.07.25_23.13.46.zip"
+METEORITE_FILEPATH = "Meteorite_Landings.csv"
+TRANSIT_FILEPATH = "cleaned_transitplanet_data.zip"  # Note: corrected to lowercase 't'
+KEPLER_FP_FILEPATH = "keplerfalsepostives.csv"
 
 # Asset files
-EXO_MAIN_BG = BASE_PATH + r'\solar-system-252023.png'
-EXO_SIDEBAR_BG = BASE_PATH + r'\planets-solar-system-cosmic-in-s.jpg'
-METEOR_MAIN_BG = BASE_PATH + r'\asteroid-earth-space-hd-wallpaper-uhdpaper.com-510@0@f.jpg'
-METEOR_SIDEBAR_BG = BASE_PATH + r'\image_a67ddb.png'
-KEPLER_MAIN_BG = BASE_PATH + r'\kepler_main.jpg'
-KEPLER_SIDEBAR_BG = BASE_PATH + r'\kepler_sidebar.jpg'
-TRANSIT_MAIN_BG = BASE_PATH + r'\transitbackground.png'
-TRANSIT_SIDEBAR_BG = BASE_PATH + r'\transitsidebar.png'
+EXO_MAIN_BG = "solar-system-252023.png"
+EXO_SIDEBAR_BG = "planets-solar-system-cosmic-in-s.jpg"
+METEOR_MAIN_BG = "asteroid-earth-space-hd-wallpaper-uhdpaper.com-510@0@f.jpg"
+METEOR_SIDEBAR_BG = "image_a67ddb.png"
+KEPLER_MAIN_BG = "kepler_main.jpg"
+KEPLER_SIDEBAR_BG = "kepler_sidebar.jpg"
+TRANSIT_MAIN_BG = "transitbackground.png"
+# IMPORTANT: Make sure 'transitsidebar.png' exists in your GitHub repository!
+TRANSIT_SIDEBAR_BG = "transitsidebar.png"
 
-# Font file paths
-TITLE_FONT_PATH = BASE_PATH + r'\fonts\SpecialGothicExpandedOne-Regular.ttf'
+# Font file paths (Note the 'fonts/' subfolder)
+TITLE_FONT_PATH = "fonts/SpecialGothicExpandedOne-Regular.ttf"
 
 
 # --- Helper function to load a local image as Base64 ---
@@ -70,36 +70,22 @@ def get_font_as_base64(font_path):
 # --- Custom Styling and Background ---
 def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
     title_font_base64 = get_font_as_base64(title_font_path)
+    main_bg_base64 = get_base64_of_bin_file(main_bg_path)
+    sidebar_bg_base64 = get_base64_of_bin_file(sidebar_bg_path)
 
-    try:
-        main_bg_base64 = get_base64_of_bin_file(main_bg_path)
-    except Exception:
-        main_bg_base64 = get_base64_of_bin_file(EXO_MAIN_BG) 
-
-    try:
-        sidebar_bg_base64 = get_base64_of_bin_file(sidebar_bg_path)
-    except Exception:
-        sidebar_bg_base64 = get_base64_of_bin_file(EXO_SIDEBAR_BG)
-
-    if not main_bg_base64 or not sidebar_bg_base64:
-        st.markdown("""<style>.main { background-color: #0E1117; }</style>""", unsafe_allow_html=True)
-        return
-
-    custom_css = f"""
-    <style>
-        /* Re-import the Google Font for the body text */
-        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap');
-
-        /* Define the custom local font for titles */
+    font_css = ""
+    if title_font_base64:
+        font_css = f"""
         @font-face {{
             font-family: 'SpecialGothic';
             src: url(data:font/ttf;base64,{title_font_base64}) format('truetype');
         }}
-
-        [data-testid="stHeader"] {{
-            display: none;
+        h1, h2, h3, h4, h5, h6 {{
+            font-family: 'SpecialGothic', sans-serif;
         }}
+        """
 
+    main_bg_css = f"""
         [data-testid="stAppViewContainer"] > .main {{
             background-image: url("data:image/png;base64,{main_bg_base64}");
             background-size: cover;
@@ -111,13 +97,30 @@ def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.7); z-index: -1;
         }}
-        .main .block-container {{ position: relative; z-index: 1; background: none; }}
-        [data-testid="stAppViewContainer"] > .main .block-container * {{
-            color: #FFFFFF; text-shadow: 1px 1px 6px #000000;
-        }}
+    """ if main_bg_base64 else ""
+
+    sidebar_bg_css = f"""
         [data-testid="stSidebar"] > div:first-child {{
             background-image: url("data:image/jpeg;base64,{sidebar_bg_base64}");
             background-position: center; background-size: cover;
+        }}
+    """ if sidebar_bg_base64 else ""
+
+    custom_css = f"""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&display=swap');
+        {font_css}
+        html, body, [class*="css"] {{
+            font-family: 'Exo 2', sans-serif;
+        }}
+        [data-testid="stHeader"] {{
+            display: none;
+        }}
+        {main_bg_css}
+        {sidebar_bg_css}
+        .main .block-container {{ position: relative; z-index: 1; background: none; }}
+        [data-testid="stAppViewContainer"] > .main .block-container * {{
+            color: #FFFFFF; text-shadow: 1px 1px 6px #000000;
         }}
         [data-testid="stSidebar"] {{
             border-right: 1px solid rgba(125, 249, 255, 0.7);
@@ -133,25 +136,23 @@ def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
         }}
         [data-testid="stDataFrame"] thead th {{ background-color: rgba(125, 249, 255, 0.2); color: white; }}
         [data-testid="stDataFrame"] {{ border: none !important; }}
-        
-        /* Set the body font back to Exo 2 */
-        html, body, [class*="css"] {{ 
-            font-family: 'Exo 2', sans-serif; 
-        }}
-
-        /* Keep the custom font for all titles */
-        h1, h2, h3, h4, h5, h6 {{ 
-            font-family: 'SpecialGothic', sans-serif; 
-        }}
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
 
+
 # --- DATA LOADING FUNCTIONS ---
 @st.cache_data
-def load_exoplanet_data(filepath):
+def load_data(filepath):
     try:
-        df = pd.read_csv(filepath, comment='#')
+        # Determine file type and load accordingly
+        if filepath.endswith('.csv'):
+            df = pd.read_csv(filepath)
+        elif filepath.endswith('.zip'):
+            df = pd.read_csv(filepath, comment='#') # Assuming zipped CSVs
+        else:
+            st.error(f"Unsupported file type for: {filepath}")
+            return None
         return df
     except FileNotFoundError:
         st.error(f"Data file not found: '{filepath}'. Please check the path.")
@@ -159,34 +160,13 @@ def load_exoplanet_data(filepath):
 
 @st.cache_data
 def load_meteorite_data(filepath):
-    try:
-        df = pd.read_csv(filepath)
+    df = load_data(filepath)
+    if df is not None:
         df.dropna(subset=['mass (g)', 'year', 'reclat', 'reclong'], inplace=True)
-        return df
-    except FileNotFoundError:
-        st.error(f"Data file not found: '{filepath}'. Please check the path.")
-        return None
-
-@st.cache_data
-def load_transit_data(filepath):
-    try:
-        df = pd.read_csv(filepath)
-        return df
-    except FileNotFoundError:
-        st.error(f"Data file not found: '{filepath}'. Please check the path.")
-        return None
-
-@st.cache_data
-def load_kepler_data(filepath):
-    try:
-        df = pd.read_csv(filepath)
-        return df
-    except FileNotFoundError:
-        st.error(f"Data file not found: '{filepath}'. Please check the path.")
-        return None
+    return df
 
 # --- MODEL TRAINING AND OBJECTIVE FUNCTIONS ---
-# (omitted for brevity, no changes needed)
+# (omitted for brevity, no changes needed from your original)
 @st.cache_resource
 def train_classification_model(data):
     features = ['pl_orbper', 'pl_rade', 'pl_bmasse', 'st_teff', 'st_rad', 'st_mass', 'sy_dist']
@@ -387,7 +367,7 @@ def display_geospatial_heatmap(df):
     st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Mass-Scaled Bubble Map")
-    map_df = df.sample(n=3000, random_state=1)
+    map_df = df.sample(n=3000, random_state=1) if len(df) > 3000 else df
     map_df['mass_scaled'] = map_df['mass (g)'].apply(lambda x: np.log10(x+1))
     fig2 = px.scatter_mapbox(map_df, lat='reclat', lon='reclong', size='mass_scaled', color='mass (g)',
                              hover_name='name', hover_data=['year', 'recclass'],
@@ -487,7 +467,7 @@ def run_transit_classification_model(df):
             st.markdown("""
             **Classification Report:**
             This table shows the model's 'report card'. A high `f1-score` (close to 1.0) indicates high accuracy for that planet type.
-            
+
             **Distribution Plot:**
             This bar chart shows how many of each planet type are in the dataset used to train the model. You can see the data is imbalanced, with far more 'Earth-like' planets than 'Large Gas Giants'. This context is important for understanding the model's performance.
             """)
@@ -543,11 +523,11 @@ def run_radius_period_scatter(df):
     col1, col2 = st.columns([2, 1])
     with col1:
         st.markdown('<div class="styled-container">', unsafe_allow_html=True)
-        
+
         # Prepare and sample the data
         plot_df = df.dropna(subset=['fpp_koi_period', 'fpp_prad', 'fpp_score']).copy()
         plot_df['disposition'] = plot_df['fpp_score'].apply(lambda x: 'False Positive' if x == 1.0 else 'Planet Candidate')
-        
+
         # Take a random sample to avoid lag
         if len(plot_df) > 2000:
             plot_df = plot_df.sample(n=2000, random_state=42)
@@ -558,7 +538,7 @@ def run_radius_period_scatter(df):
                          labels={'fpp_koi_period': 'Orbital Period in Days (Log Scale)', 'fpp_prad': 'Planet Radius in Earth Radii (Log Scale)'},
                          title="Planet Radius vs. Orbital Period (Sampled)",
                          color_discrete_map={'Planet Candidate': '#4C72B0', 'False Positive': '#C44E52'})
-        
+
         fig.update_traces(marker=dict(size=5, opacity=0.7))
         fig.update_layout(paper_bgcolor='rgba(30, 30, 50, 0.9)', plot_bgcolor='rgba(0,0,0,0.4)', font_color="white")
         st.plotly_chart(fig, use_container_width=True)
@@ -582,7 +562,7 @@ st.sidebar.markdown("---")
 
 if dataset_choice == "Exoplanet Archive":
     add_custom_styling(main_bg_path=EXO_MAIN_BG, sidebar_bg_path=EXO_SIDEBAR_BG, title_font_path=TITLE_FONT_PATH)
-    data = load_exoplanet_data(EXOPLANET_FILEPATH)
+    data = load_data(EXOPLANET_FILEPATH)
     if data is not None:
         st.sidebar.header("Select an Analysis")
         analysis_choice = st.sidebar.radio("Exoplanet Analyses:", ["Home", "1. Predict Discovery Method", "2. Predict Planet Radius", "3. Discover System Types", "4. Find Habitable Planets"], key="exoplanet_nav")
@@ -608,7 +588,7 @@ elif dataset_choice == "Meteorite Landings":
 
 elif dataset_choice == "Transiting Planets":
     add_custom_styling(main_bg_path=TRANSIT_MAIN_BG, sidebar_bg_path=TRANSIT_SIDEBAR_BG, title_font_path=TITLE_FONT_PATH)
-    data = load_transit_data(TRANSIT_FILEPATH)
+    data = load_data(TRANSIT_FILEPATH)
     if data is not None:
         st.sidebar.header("Select an Analysis")
         analysis_choice = st.sidebar.radio("Transit Analyses:", ["Home", "1. Habitable vs. Non-Habitable", "2. Planet Classification Model"], key="transit_nav")
@@ -620,7 +600,7 @@ elif dataset_choice == "Transiting Planets":
 
 elif dataset_choice == "Kepler False Positives":
     add_custom_styling(main_bg_path=KEPLER_MAIN_BG, sidebar_bg_path=KEPLER_SIDEBAR_BG, title_font_path=TITLE_FONT_PATH)
-    data = load_kepler_data(KEPLER_FP_FILEPATH)
+    data = load_data(KEPLER_FP_FILEPATH)
     if data is not None:
         st.sidebar.header("Select an Analysis")
         analysis_choice = st.sidebar.radio(
