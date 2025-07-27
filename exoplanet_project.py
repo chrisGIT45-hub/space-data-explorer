@@ -69,16 +69,38 @@ def get_font_as_base64(font_path):
         return None
 
 # --- Custom Styling and Background ---
+# --- CORRECTED Custom Styling and Background Function ---
 def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
-    st.info(f"Attempting to load MAIN background: '{main_bg_path}'")
-    st.info(f"Does the file exist on the server? -> {os.path.exists(main_bg_path)}")
+    # This new version automatically detects if an image is a JPG or PNG
+    # and removes the try/except blocks that were hiding errors.
 
-    st.info(f"Attempting to load SIDEBAR background: '{sidebar_bg_path}'")
-    st.info(f"Does the file exist on the server? -> {os.path.exists(sidebar_bg_path)}")
-    # --- END: TEMPORARY DEBUGGING CODE ---
+    def get_image_data(file_path):
+        """Reads an image file and returns its base64 string and mime type."""
+        if not os.path.exists(file_path):
+            st.warning(f"Asset file not found: {file_path}. No background will be used.")
+            return None, None
+
+        file_extension = os.path.splitext(file_path)[1].lower()
+        if file_extension == ".png":
+            mime_type = "image/png"
+        elif file_extension in [".jpg", ".jpeg"]:
+            mime_type = "image/jpeg"
+        else:
+            st.warning(f"Unsupported image type: {file_extension}. No background will be used.")
+            return None, None
+
+        try:
+            with open(file_path, "rb") as f:
+                data = f.read()
+            base64_str = base64.b64encode(data).decode()
+            return base64_str, mime_type
+        except Exception as e:
+            st.error(f"Could not read or encode file {file_path}. Error: {e}")
+            return None, None
+
     title_font_base64 = get_font_as_base64(title_font_path)
-    main_bg_base64 = get_base64_of_bin_file(main_bg_path)
-    sidebar_bg_base64 = get_base64_of_bin_file(sidebar_bg_path)
+    main_bg_base64, main_mime_type = get_image_data(main_bg_path)
+    sidebar_bg_base64, sidebar_mime_type = get_image_data(sidebar_bg_path)
 
     font_css = ""
     if title_font_base64:
@@ -92,9 +114,11 @@ def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
         }}
         """
 
-    main_bg_css = f"""
+    main_bg_css = ""
+    if main_bg_base64:
+        main_bg_css = f"""
         [data-testid="stAppViewContainer"] > .main {{
-            background-image: url("data:image/png;base64,{main_bg_base64}");
+            background-image: url("data:{main_mime_type};base64,{main_bg_base64}");
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
@@ -104,14 +128,16 @@ def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0, 0, 0, 0.7); z-index: -1;
         }}
-    """ if main_bg_base64 else ""
+        """
 
-    sidebar_bg_css = f"""
+    sidebar_bg_css = ""
+    if sidebar_bg_base64:
+        sidebar_bg_css = f"""
         [data-testid="stSidebar"] > div:first-child {{
-            background-image: url("data:image/jpeg;base64,{sidebar_bg_base64}");
+            background-image: url("data:{sidebar_mime_type};base64,{sidebar_bg_base64}");
             background-position: center; background-size: cover;
         }}
-    """ if sidebar_bg_base64 else ""
+        """
 
     custom_css = f"""
     <style>
@@ -120,9 +146,7 @@ def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
         html, body, [class*="css"] {{
             font-family: 'Exo 2', sans-serif;
         }}
-        [data-testid="stHeader"] {{
-            display: none;
-        }}
+        [data-testid="stHeader"] {{ display: none; }}
         {main_bg_css}
         {sidebar_bg_css}
         .main .block-container {{ position: relative; z-index: 1; background: none; }}
@@ -146,8 +170,6 @@ def add_custom_styling(main_bg_path, sidebar_bg_path, title_font_path):
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
-
-
 # --- DATA LOADING FUNCTIONS ---
 @st.cache_data
 def load_data(filepath):
