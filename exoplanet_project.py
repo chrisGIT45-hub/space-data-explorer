@@ -52,21 +52,18 @@ TITLE_FONT_PATH = BASE_PATH / "fonts" / "SpecialGothicExpandedOne-Regular.ttf"
 def get_base64_of_bin_file(bin_file):
     try:
         with open(bin_file, 'rb') as f:
-            data = f.read()
-        return base64.b64encode(data).decode()
-    except FileNotFoundError:
-        st.warning(f"Asset file not found: {bin_file}. A default background will be used.")
+            return base64.b64encode(f.read()).decode()
+    except Exception as e:
+        st.error(f"Failed to load {bin_file}: {e}")
         return None
 
-# --- Helper function to load and encode a local font file ---
 @st.cache_data
 def get_font_as_base64(font_path):
     try:
         with open(font_path, 'rb') as f:
-            data = f.read()
-        return base64.b64encode(data).decode()
-    except FileNotFoundError:
-        st.warning(f"Font file not found: {font_path}. Using default fonts.")
+            return base64.b64encode(f.read()).decode()
+    except Exception as e:
+        st.error(f"Font load failed: {e}")
         return None
 
 # --- Custom Styling and Background ---
